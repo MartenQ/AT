@@ -38,7 +38,7 @@ try:
 
         # --- Wake-Word + Kommando ---
         detected_wake_word, command = stt.listen_for_wake_word_and_command(
-            wake_window=5,   # ≥5 Sekunden für zuverlässige Wake-Word-Erkennung
+            wake_window=8,   # ≥5 Sekunden für zuverlässige Wake-Word-Erkennung
             overlap=1        # Überlappung, schnelle Reaktion
         )
 
