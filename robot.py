@@ -9,7 +9,7 @@ import os
 import random
 import time
 import threading
-import cv2
+from picamera2 import Picamera2
 import numpy as np
 
 from control.behavior import NaturalBehavior  # <--- Import der neuen Klasse
@@ -95,19 +95,20 @@ class Robot:
 
     def follow_object(self, color="red"):
         """
-        Objekt verfolgen. Läuft in einem eigenen Thread, bis stop() aufgerufen wird.
+        Objekt verfolgen mit Picamera2. Läuft in einem eigenen Thread, bis stop_following() aufgerufen wird.
         """
         self._following = True
 
         def _follow():
-            cap = cv2.VideoCapture(0)
+            picam2 = Picamera2()
+            preview_config = picam2.create_preview_configuration(main={"format": "RGB888", "size": (640, 480)})
+            picam2.configure(preview_config)
+            picam2.start()
+
             try:
                 while self._following:
-                    ret, frame = cap.read()
-                    if not ret:
-                        continue
-
-                    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+                    frame = picam2.capture_array()
+                    hsv = cv2.cvtColor(frame, cv2.COLOR_RGB2HSV)
 
                     if color == "red":
                         lower_red1 = np.array([0, 120, 70])
@@ -116,7 +117,6 @@ class Robot:
                         upper_red2 = np.array([180, 255, 255])
                         mask = cv2.inRange(hsv, lower_red1, upper_red1) + cv2.inRange(hsv, lower_red2, upper_red2)
                     else:
-                        # Andere Farben können hier ergänzt werden
                         mask = cv2.inRange(hsv, np.array([0,0,0]), np.array([0,0,0]))
 
                     contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -137,7 +137,7 @@ class Robot:
 
                     time.sleep(0.05)
             finally:
-                cap.release()
+                picam2.stop()
                 self.stop()
 
         threading.Thread(target=_follow, daemon=True).start()
