@@ -48,7 +48,7 @@ try:
         for cmd_name, keywords in config.COMMAND_KEYWORDS.items():
             for word in keywords:
                 if word in command:
-                    robot.touch()
+                    #robot.touch()
                     action = COMMAND_ACTIONS.get(cmd_name)
                     if action:
                         action(robot)
