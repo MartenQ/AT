@@ -4,6 +4,7 @@ from control.movement import MovementController
 from hardware.eyes import Eyes
 from audio.tts import OfflineTextToSpeech
 from audio.stt import OfflineSpeechToText
+from control.tracker import Tracker
 import config
 import os
 import random
@@ -90,128 +91,23 @@ class Robot:
     def check_idle(self):
         self.natural_behavior.check_idle()
 
+    def follow_object_color(self, color="red"):
+        """Starte Tracker für Objekt/Farbe"""
+        self.say(f"Ich folge dem {color}en Objekt")
+        self.tracker = Tracker(self, color=color)
+        self.tracker.start()
+
+    def follow_person(self, color="red"):
+        """Starte Tracker für Person (Farberkennung, z.B. Kleidung)"""
+        self.say("Ich folge der Person")
+        self.tracker = Tracker(self, color=color)
+        self.tracker.start()
+
+    def stop_following(self):
+        if hasattr(self, "tracker") and self.tracker:
+            self.tracker.stop()
+
     # --- Shutdown ---
     def shutdown(self):
         self.movement.stop()
         self.gpio.cleanup()
-
-    # def follow_object(self, color="red"):
-    #     """
-    #     Objekt verfolgen mit Picamera2. Läuft in einem eigenen Thread, bis stop_following() aufgerufen wird.
-    #     """
-    #     self._following = True
-
-    #     def _follow():
-    #         picam2 = Picamera2()
-    #         preview_config = picam2.create_preview_configuration(main={"format": "RGB888", "size": (640, 480)})
-    #         picam2.configure(preview_config)
-    #         picam2.start()
-
-    #         try:
-    #             while self._following:
-    #                 frame = picam2.capture_array()
-    #                 hsv = cv2.cvtColor(frame, cv2.COLOR_RGB2HSV)
-
-    #                 if color == "red":
-    #                     lower_red1 = np.array([0, 120, 70])
-    #                     upper_red1 = np.array([10, 255, 255])
-    #                     lower_red2 = np.array([170, 120, 70])
-    #                     upper_red2 = np.array([180, 255, 255])
-    #                     mask = cv2.inRange(hsv, lower_red1, upper_red1) + cv2.inRange(hsv, lower_red2, upper_red2)
-    #                 else:
-    #                     mask = cv2.inRange(hsv, np.array([0,0,0]), np.array([0,0,0]))
-
-    #                 contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    #                 if contours:
-    #                     c = max(contours, key=cv2.contourArea)
-    #                     x, y, w, h = cv2.boundingRect(c)
-    #                     cx = x + w // 2
-    #                     frame_center = frame.shape[1] // 2
-
-    #                     if cx < frame_center - 30:
-    #                         self.left()
-    #                     elif cx > frame_center + 30:
-    #                         self.right()
-    #                     else:
-    #                         self.fwd()
-    #                 else:
-    #                     self.stop()
-
-    #                 time.sleep(0.05)
-    #         finally:
-    #             picam2.stop()
-    #             self.stop()
-
-    #     threading.Thread(target=_follow, daemon=True).start()
-
-    # def stop_following(self):
-    #     """Stoppt die Objektverfolgung"""
-    #     self._following = False
-    #     self.stop()
-
-    def follow_person_color(self, color="green"):
-        """
-        Person mit bestimmter Farbe folgen.
-        color: "red", "green", "blue", etc.
-        """
-        self._following = True
-
-        def _follow():
-            picam2 = Picamera2()
-            picam2.configure(
-                picam2.create_preview_configuration(main={"format": "RGB888", "size": (640, 480)})
-            )
-            picam2.start()
-
-            # Farbbereiche in HSV definieren
-            COLOR_RANGES = {
-                "red": [([0, 120, 70], [10, 255, 255]), ([170, 120, 70], [180, 255, 255])],
-                "green": [([36, 25, 25], [86, 255, 255])],
-                "blue": [([94, 80, 2], [126, 255, 255])]
-            }
-
-            ranges = COLOR_RANGES.get(color, COLOR_RANGES["red"])
-
-            try:
-                while self._following:
-                    frame = picam2.capture_array()
-                    hsv = cv2.cvtColor(frame, cv2.COLOR_RGB2HSV)
-
-                    # Maske für die gewählte Farbe erstellen
-                    mask = np.zeros(hsv.shape[:2], dtype=np.uint8)
-                    for lower, upper in ranges:
-                        lower_np = np.array(lower)
-                        upper_np = np.array(upper)
-                        mask += cv2.inRange(hsv, lower_np, upper_np)
-
-                    # Konturen finden
-                    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-                    if contours:
-                        # Größtes Farbbox-Objekt nehmen
-                        c = max(contours, key=cv2.contourArea)
-                        x, y, w, h = cv2.boundingRect(c)
-                        cx = x + w // 2
-                        frame_center = frame.shape[1] // 2
-
-                        # Bewegung steuern
-                        if cx < frame_center - 30:
-                            self.right()  # vertauschte Motoren
-                        elif cx > frame_center + 30:
-                            self.left()
-                        else:
-                            self.fwd()
-                    else:
-                        self.stop()
-
-                    time.sleep(0.05)
-            finally:
-                picam2.stop()
-                self.stop()
-
-        threading.Thread(target=_follow, daemon=True).start()
-
-
-    def stop_following(self):
-        """Stoppt die Objekt-/Personenverfolgung"""
-        self._following = False
-        self.stop()
