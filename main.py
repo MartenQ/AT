@@ -17,14 +17,15 @@ COMMAND_ACTIONS = {
     ),
 }
 
+robot.eyes.set_color_hex("#00ffcc")
+robot.eyes.breathe()
 
 try:
     while True:
         robot.check_idle()
 
         # Augenanimation starten
-        robot.eyes.breathe()
-        robot.eyes.set_color_hex("#00ffcc")
+        
 
         # Wake-Word + Kommando
         command = robot.listen_for_wake_word_and_command()
