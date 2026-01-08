@@ -11,7 +11,7 @@ COMMAND_ACTIONS = {
     "right": lambda r: (r.right(), r.say("Ich fahre rechts")),
     "stop": lambda r: (r.stop(), r.say("Ich stoppe")),
     "motivation": lambda r: r.say("Los Alina, los los Alina"),
-    "follow": lambda r: (r.say("Ich folge dem Objekt"), r.follow_object()),
+    "follow": lambda r: (r.say("Ich folge dem Objekt"), r.follow_person_color()),
     "stop_follow": lambda r: (r.say("Ich höre auf zu folgen"), r.stop_following()),
     "entchen": lambda r: (
         r.say("Jetzt spiele ich Alle meine Entchen"),

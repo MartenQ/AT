@@ -27,7 +27,7 @@ class NaturalBehavior:
 
     # --- Idle Aktionen ---
     def _action_look_around(self):
-        texts = ["uhh...", "Was ist das.", "Guck mal da.","soso...", "Interessant."," hmmm...","Ach so.","Oh!", "Aha!"]
+        texts = ["uh...", "Was ist das.", "Guck mal da.","soso...", "Interessant."," hm...","Ach so.","Oh!", "Aha!"]
         direction1, direction2 = (self.robot.left, self.robot.right) if random.choice([True, False]) else (self.robot.right, self.robot.left)
         self.robot.stop()
         direction1(); time.sleep(0.4); self.robot.stop(); time.sleep(0.2)
@@ -49,7 +49,7 @@ class NaturalBehavior:
         time.sleep(0.2); direction1(); time.sleep(0.4); self.robot.stop()
 
     def _action_say(self):
-        texts = ["hmm...", "Ich bin noch da.", "Langweilig hier.", "Hallo?"]
+        texts = ["hm...", "Ich bin noch da.", "Langweilig hier.", "Hallo?"]
         self.robot.back(); time.sleep(0.4); self.robot.stop()
         self.robot.say(random.choice(texts))
         self.robot.fwd(); time.sleep(0.4); self.robot.stop()
