@@ -4,7 +4,7 @@ import threading
 import time
 import math
 import RPi.GPIO as GPIO
-import config
+import config.config as config
 
 
 class Eyes:

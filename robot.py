@@ -5,7 +5,7 @@ from hardware.eyes import Eyes
 from audio.tts import OfflineTextToSpeech
 from audio.stt import OfflineSpeechToText
 from control.tracker import Tracker
-import config
+import config.config as config
 import os
 import random
 import time

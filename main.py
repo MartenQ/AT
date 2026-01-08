@@ -1,6 +1,6 @@
 # main.py                                                                main.py                                                                            
 from robot import Robot
-import config
+import config.config as config
 
 robot = Robot()
 

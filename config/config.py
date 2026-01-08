@@ -1,5 +1,8 @@
 # config.py
 
+import json
+import os
+
 # GPIO Pins (BCM Nummerierung)
 LEFT_MOTOR_FORWARD = 24
 LEFT_MOTOR_BACKWARD = 22
@@ -32,14 +35,14 @@ EYE_SUPPLY_V = 3.3
 EYE_BREATHE_FREQ = 0.5
 EYE_BREATHE_STEPS = 100
 
-COMMAND_KEYWORDS = {
-    "forward": ["fahr", "los", "vorwärts", "vorwaerts", "geh","vor"],
-    "backward": ["zurück", "zurueck", "rückwärts", "rueckwaerts","zur"],
-    "left": ["links", "linke","link","ks"],
-    "right": ["rechts", "rechte","recht","ts"],
-    "stop": ["stop", "stopp", "halt", "anhalten","top"],
-    "motivation": ["motivation", "anfeuern"],
-    "entchen": ["entchen", "lied","ent","ente"],
-    "follow": ["folge", "verfolge", "tracke", "track"],
-    "stop_follow": ["stopp folge", "hör auf zu folgen", "beende folgen"]
-}
+# -------------------------
+# COMMAND_KEYWORDS aus JSON laden
+# -------------------------
+json_path = os.path.join(os.path.dirname(__file__), "command_keywords.json")
+
+if os.path.isfile(json_path):
+    with open(json_path, "r", encoding="utf-8") as f:
+        COMMAND_KEYWORDS = json.load(f)
+else:
+    print(f"⚠️ command_keywords.json nicht gefunden unter {json_path}")
+    COMMAND_KEYWORDS = {}

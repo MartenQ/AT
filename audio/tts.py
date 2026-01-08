@@ -4,7 +4,7 @@ import os
 import subprocess
 import wave
 from gtts import gTTS
-import config
+import config.config as config
 
 import vlc
 import time

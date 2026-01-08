@@ -3,7 +3,7 @@
 import os
 import subprocess
 from gtts import gTTS
-import config
+import config.config as config
 
 
 class AudioPlayer:
