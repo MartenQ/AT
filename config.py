@@ -33,25 +33,13 @@ EYE_BREATHE_FREQ = 0.5
 EYE_BREATHE_STEPS = 100
 
 COMMAND_KEYWORDS = {
-    "forward": [
-        "fahr", "los", "vorwärts", "vorwaerts", "geh","vor"
-    ],
-    "backward": [
-        "zurück", "zurueck", "rückwärts", "rueckwaerts","zur"
-    ],
-    "left": [
-        "links", "linke","link","ks"
-    ],
-    "right": [
-        "rechts", "rechte","recht","ts"
-    ],
-    "stop": [
-        "stop", "stopp", "halt", "anhalten","top"
-    ],
-    "motivation": [
-        "motivation", "anfeuern"
-    ],
-    "entchen": [
-        "entchen", "lied","ent","ente"
-    ]
+    "forward": ["fahr", "los", "vorwärts", "vorwaerts", "geh","vor"],
+    "backward": ["zurück", "zurueck", "rückwärts", "rueckwaerts","zur"],
+    "left": ["links", "linke","link","ks"],
+    "right": ["rechts", "rechte","recht","ts"],
+    "stop": ["stop", "stopp", "halt", "anhalten","top"],
+    "motivation": ["motivation", "anfeuern"],
+    "entchen": ["entchen", "lied","ent","ente"],
+    "follow": ["folge", "verfolge", "tracke", "track"],
+    "stop_follow": ["stopp folge", "hör auf zu folgen", "beende folgen"]
 }

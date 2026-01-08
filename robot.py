@@ -8,6 +8,9 @@ import config
 import os
 import random
 import time
+import threading
+import cv2
+import numpy as np
 
 from control.behavior import NaturalBehavior  # <--- Import der neuen Klasse
 
@@ -89,3 +92,57 @@ class Robot:
     def shutdown(self):
         self.movement.stop()
         self.gpio.cleanup()
+
+    def follow_object(self, color="red"):
+        """
+        Objekt verfolgen. Läuft in einem eigenen Thread, bis stop() aufgerufen wird.
+        """
+        self._following = True
+
+        def _follow():
+            cap = cv2.VideoCapture(0)
+            try:
+                while self._following:
+                    ret, frame = cap.read()
+                    if not ret:
+                        continue
+
+                    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+                    if color == "red":
+                        lower_red1 = np.array([0, 120, 70])
+                        upper_red1 = np.array([10, 255, 255])
+                        lower_red2 = np.array([170, 120, 70])
+                        upper_red2 = np.array([180, 255, 255])
+                        mask = cv2.inRange(hsv, lower_red1, upper_red1) + cv2.inRange(hsv, lower_red2, upper_red2)
+                    else:
+                        # Andere Farben können hier ergänzt werden
+                        mask = cv2.inRange(hsv, np.array([0,0,0]), np.array([0,0,0]))
+
+                    contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                    if contours:
+                        c = max(contours, key=cv2.contourArea)
+                        x, y, w, h = cv2.boundingRect(c)
+                        cx = x + w // 2
+                        frame_center = frame.shape[1] // 2
+
+                        if cx < frame_center - 30:
+                            self.left()
+                        elif cx > frame_center + 30:
+                            self.right()
+                        else:
+                            self.fwd()
+                    else:
+                        self.stop()
+
+                    time.sleep(0.05)
+            finally:
+                cap.release()
+                self.stop()
+
+        threading.Thread(target=_follow, daemon=True).start()
+
+    def stop_following(self):
+        """Stoppt die Objektverfolgung"""
+        self._following = False
+        self.stop()

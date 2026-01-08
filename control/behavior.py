@@ -49,7 +49,7 @@ class NaturalBehavior:
         time.sleep(0.2); direction1(); time.sleep(0.4); self.robot.stop()
 
     def _action_say(self):
-        texts = ["Hmm?", "Ich bin noch da.", "Langweilig hier.", "Hallo?"]
+        texts = ["hmm...", "Ich bin noch da.", "Langweilig hier.", "Hallo?"]
         self.robot.back(); time.sleep(0.4); self.robot.stop()
         self.robot.say(random.choice(texts))
         self.robot.fwd(); time.sleep(0.4); self.robot.stop()
