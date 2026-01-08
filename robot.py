@@ -75,22 +75,25 @@ class Robot:
     def stop(self): self.movement.stop()
 
     def adaptive_forward(self):
-        distance = self.range_sensor.range  # Abstand in mm
-        print(f"Abstand: {distance} mm")
+        self.distance_thread_running = True
 
-        if distance < self.min_distance * 10:  # zu nah → stop & nur rückwärts/links/rechts
-            self.stop()
-            print("Zu nah! Stoppe.")
-        elif distance < self.slow_distance * 10:
-            # Geschwindigkeit anpassen
-            factor = (distance / (self.slow_distance * 10))  # 0–1
-            speed = int(config.DEFAULT_SPEED * factor)
-            self.movement.left_motor.set_speed(speed)
-            self.movement.right_motor.set_speed(speed)
-            print(f"Langsamer fahren: Geschwindigkeit {speed}")
-        else:
-            # normal vorwärts
-            self.fwd()
+        while self.distance_thread_running:
+            distance = self.range_sensor.range  # Abstand in mm
+            print(f"Abstand: {distance} mm")
+
+            if distance < self.min_distance * 10:  # zu nah → stop & nur rückwärts/links/rechts
+                self.stop()
+                print("Zu nah! Stoppe.")
+            elif distance < self.slow_distance * 10:
+                # Geschwindigkeit anpassen
+                factor = (distance / (self.slow_distance * 10))  # 0–1
+                speed = int(config.DEFAULT_SPEED * factor)
+                self.movement.left_motor.set_speed(speed)
+                self.movement.right_motor.set_speed(speed)
+                print(f"Langsamer fahren: Geschwindigkeit {speed}")
+            else:
+                # normal vorwärts
+                self.fwd()
 
     # --- Audio ---
     def say(self, text: str):
@@ -136,6 +139,8 @@ class Robot:
     def stop_following(self):
         if hasattr(self, "tracker") and self.tracker:
             self.tracker.stop()
+            self.distance_thread_running = False
+
 
     # --- Shutdown ---
     def shutdown(self):

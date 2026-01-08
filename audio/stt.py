@@ -16,7 +16,8 @@ class OfflineSpeechToText:
         sample_rate=16000,
         channels=1,
         chunk_size=4000,
-        max_record_seconds=max_record_seconds
+        max_record_seconds=max_record_seconds,
+        SetLogLevel=-1
     ):
         # Standard-Wake-Wortliste, falls None übergeben
         self.wake_words = [w.lower() for w in wake_words] if wake_words else ["roboter"]
@@ -25,6 +26,8 @@ class OfflineSpeechToText:
         self.channels = channels
         self.chunk_size = chunk_size
         self.max_record_seconds = max_record_seconds
+
+
 
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"Modell nicht gefunden: {model_path}")
