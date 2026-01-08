@@ -81,10 +81,10 @@ class Robot:
             distance = self.range_sensor.range  # Abstand in mm
             print(f"Abstand: {distance} mm")
 
-            if distance < self.min_distance * 10:  # zu nah → stop & nur rückwärts/links/rechts
+            if distance < self.min_distance * 60:  # zu nah → stop & nur rückwärts/links/rechts
                 self.stop()
                 print("Zu nah! Stoppe.")
-            elif distance < self.slow_distance * 10:
+            elif distance < self.slow_distance * 120:
                 # Geschwindigkeit anpassen
                 factor = (distance / (self.slow_distance * 10))  # 0–1
                 speed = int(config.DEFAULT_SPEED * factor)
