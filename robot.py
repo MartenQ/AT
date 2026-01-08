@@ -13,6 +13,9 @@ import threading
 import cv2
 from picamera2 import Picamera2
 import numpy as np
+import board
+import busio
+import adafruit_vl53l0x
 
 
 from control.behavior import NaturalBehavior  # <--- Import der neuen Klasse
@@ -55,12 +58,39 @@ class Robot:
         # --- Natürliches Verhalten ---
         self.natural_behavior = NaturalBehavior(self)
 
+        # Abstandssensor initialisieren
+        i2c = busio.I2C(board.SCL, board.SDA)
+        self.range_sensor = adafruit_vl53l0x.VL53L0X(i2c)
+
+        # Abstandsschwellen aus config
+        self.min_distance = config.VL53L0X_MIN_DISTANCE
+        self.slow_distance = config.VL53L0X_SLOW_DISTANCE
+
+
     # --- Motorsteuerung ---
     def fwd(self): self.movement.forward()
     def back(self): self.movement.backward()
     def left(self): self.movement.left()
     def right(self): self.movement.right()
     def stop(self): self.movement.stop()
+
+    def adaptive_forward(self):
+        distance = self.range_sensor.range  # Abstand in mm
+        print(f"Abstand: {distance} mm")
+
+        if distance < self.min_distance * 10:  # zu nah → stop & nur rückwärts/links/rechts
+            self.stop()
+            print("Zu nah! Stoppe.")
+        elif distance < self.slow_distance * 10:
+            # Geschwindigkeit anpassen
+            factor = (distance / (self.slow_distance * 10))  # 0–1
+            speed = int(config.DEFAULT_SPEED * factor)
+            self.movement.left_motor.set_speed(speed)
+            self.movement.right_motor.set_speed(speed)
+            print(f"Langsamer fahren: Geschwindigkeit {speed}")
+        else:
+            # normal vorwärts
+            self.fwd()
 
     # --- Audio ---
     def say(self, text: str):

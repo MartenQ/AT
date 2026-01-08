@@ -5,6 +5,7 @@ import tempfile
 import wave
 os.environ["VOSK_LOG_LEVEL"] = "1"  # 0 = keine Logs, 1 = Fehler, 2 = Warnungen, 3 = Info
 from vosk import Model, KaldiRecognizer
+from config.config import max_record_seconds
 
 class OfflineSpeechToText:
     def __init__(
@@ -15,7 +16,7 @@ class OfflineSpeechToText:
         sample_rate=16000,
         channels=1,
         chunk_size=4000,
-        max_record_seconds=3
+        max_record_seconds=max_record_seconds
     ):
         # Standard-Wake-Wortliste, falls None übergeben
         self.wake_words = [w.lower() for w in wake_words] if wake_words else ["roboter"]
