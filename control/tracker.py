@@ -73,9 +73,9 @@ class Tracker:
 
                     # Bewegung steuern
                     if cx < frame_center - 30:
-                        self.robot.right()  # vertauschte Motoren berücksichtigen
-                    elif cx > frame_center + 30:
                         self.robot.left()
+                    elif cx > frame_center + 30:
+                        self.robot.right()
                     else:
                         self.robot.fwd()
                 else:
