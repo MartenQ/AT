@@ -34,7 +34,7 @@ try:
         command = robot.listen_for_wake_word_and_command()
         if not command:
             continue  # kein Wake-Word erkannt
-        robot.touch()   # 👈 SEHR wichtig
+        #robot.touch()   # 👈 SEHR wichtig
 
         robot.eyes.stop_animation()
         robot.eyes.set_color_hex("#0000FF")
