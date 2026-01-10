@@ -34,61 +34,62 @@ class OfflineSpeechToText:
 
     def listen_once(self):
         """
-        Hört einmal auf Wake-Words + Befehl in einem Durchgang.
-        Gibt zurück: (detected_wake_word: str | None, command_text: str | None)
+        Hört kontinuierlich auf Wake-Words und danach auf ein Kommando.
+        Rückgabe: (detected_wake_word, command_text)
         """
         recognizer = KaldiRecognizer(self.model, self.sample_rate)
 
-        # Temporäre WAV-Datei
-        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
-            wav_path = f.name
-
-        # Aufnahme
-        subprocess.run(
+        process = subprocess.Popen(
             [
                 "arecord",
                 "-D", self.device,
-                "-c", str(self.channels),
-                "-r", str(self.sample_rate),
                 "-f", "S16_LE",
-                "-d", str(self.max_record_seconds),
-                wav_path
+                "-r", str(self.sample_rate),
+                "-c", str(self.channels)
             ],
-            check=True,
-            stdout=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL
         )
 
-        # Erkennen
-        wf = wave.open(wav_path, "rb")
-        result_text = ""
         detected_wake_word = None
+        collected_text = []
+        silence_chunks = 0
+        max_silence_chunks = int(self.sample_rate / self.chunk_size * 1.5)  # ~1.5s Stille
 
-        while True:
-            data = wf.readframes(self.chunk_size)
-            if len(data) == 0:
-                break
-            if recognizer.AcceptWaveform(data):
-                res = json.loads(recognizer.Result())
-                text = res.get("text", "").lower()
-                print(text)
-                if text:
-                    result_text += " " + text
-                    for word in self.wake_words:
-                        if word in text:
-                            detected_wake_word = word
+        try:
+            while True:
+                data = process.stdout.read(self.chunk_size)
+                if not data:
+                    break
 
-        # Letztes Ergebnis
-        res = json.loads(recognizer.FinalResult())
-        text = res.get("text", "").lower()
-        if text:
-            result_text += " " + text
-            for word in self.wake_words:
-                if word in text:
-                    detected_wake_word = word
+                if recognizer.AcceptWaveform(data):
+                    result = json.loads(recognizer.Result())
+                    text = result.get("text", "").lower()
 
-        wf.close()
-        os.remove(wav_path)
+                    if text:
+                        print("🎧", text)
+                        collected_text.append(text)
 
-        command_text = result_text.replace(detected_wake_word, "").strip() if detected_wake_word else None
+                        # Wake-Word-Erkennung
+                        if not detected_wake_word:
+                            for word in self.wake_words:
+                                if word in text:
+                                    detected_wake_word = word
+                                    print(f"🟢 Wake-Word erkannt: {word}")
+                                    recognizer.Reset()
+                                    collected_text = []
+                                    break
+                        else:
+                            silence_chunks = 0
+                else:
+                    if detected_wake_word:
+                        silence_chunks += 1
+                        if silence_chunks > max_silence_chunks:
+                            break
+
+        finally:
+            process.terminate()
+
+        command_text = " ".join(collected_text).strip() if detected_wake_word else None
         return detected_wake_word, command_text
+
