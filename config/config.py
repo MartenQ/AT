@@ -26,7 +26,7 @@ TTS_TMP_MP3 = "/tmp/tts_output.mp3"
 TTS_TMP_WAV = "/tmp/tts_output.wav"
 PLAY_TMP_WAV = "/tmp/play_output.wav"
 
-max_record_seconds = 15 # Maximale Aufnahmezeit für STT in Sekunden
+max_record_seconds = 10 # Maximale Aufnahmezeit für STT in Sekunden
 
 
 # Augen LEDs (BCM)
