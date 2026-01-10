@@ -76,9 +76,14 @@ class OfflineSpeechToText:
                                 if word in text:
                                     detected_wake_word = word
                                     print(f"🟢 Wake-Word erkannt: {word}")
-                                    recognizer.Reset()
+
+                                    # Wake-Word entfernen, Kommando behalten
+                                    cleaned = text.replace(word, "").strip()
                                     collected_text = []
+                                    if cleaned:
+                                        collected_text.append(cleaned)
                                     break
+
                         else:
                             silence_chunks = 0
                 else:
