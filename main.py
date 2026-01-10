@@ -37,7 +37,6 @@ try:
         # --- Wake-Word + Kommando ---
         robot.eyes.breathe()
         command = robot.listen_for_wake_word_and_command()
-        robot.natural_behavior._action_eye_color()
         if not command:
             continue  # kein Wake-Word erkannt
 
