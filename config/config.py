@@ -13,20 +13,12 @@ RIGHT_MOTOR_BACKWARD = 25
 PWM_FREQUENCY = 1000
 DEFAULT_SPEED = 100  # 0–100
 
-# Abstandssensor VL53L0X
-VL53L0X_MIN_DISTANCE = 15    # cm → stoppt wenn näher
-VL53L0X_SLOW_DISTANCE = 40   # cm → verlangsamen ab diesem Abstand
-
-
-
 # Audio
 TTS_LANGUAGE = "de"
 TTS_VOLUME = 1.2
 TTS_TMP_MP3 = "/tmp/tts_output.mp3"
 TTS_TMP_WAV = "/tmp/tts_output.wav"
 PLAY_TMP_WAV = "/tmp/play_output.wav"
-
-max_record_seconds = 15 # Maximale Aufnahmezeit für STT in Sekunden
 
 
 # Augen LEDs (BCM)
