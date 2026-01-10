@@ -31,7 +31,6 @@ class OfflineTextToSpeech:
         t.join(timeout=5)  # Wenn du willst, dass Python wartet, sonst entfernen
 
     def play(self, name: str):
-        time.sleep(0.3)
         """
         MP3/WAV-Datei abspielen ohne Endlosschleife hängen zu lassen
         """
