@@ -18,7 +18,8 @@ process = subprocess.Popen(
         "-D", DEVICE,
         "-f", "S16_LE",
         "-r", str(RATE),
-        "-c", "1"
+        "-c", "1",
+        "-t", "raw"
     ],
     stdout=subprocess.PIPE
 )
@@ -35,3 +36,5 @@ try:
 except KeyboardInterrupt:
     print("\n🛑 Stop")
     process.terminate()
+
+#
