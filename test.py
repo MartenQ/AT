@@ -36,5 +36,3 @@ try:
 except KeyboardInterrupt:
     print("\n🛑 Stop")
     process.terminate()
-
-#
