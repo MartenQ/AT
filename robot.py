@@ -80,6 +80,7 @@ class Robot:
             print(f"⚠️ Keine Audiodateien im Ordner: {folder_path}")
             return
         file_to_play = random.choice(files)
+        print(f"▶️ Spiele Datei: {file_to_play}")
         self.tts.play(os.path.join(folder_path, file_to_play))
 
     # --- Sprachsteuerung ---
