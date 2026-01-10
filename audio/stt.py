@@ -17,7 +17,7 @@ class OfflineSpeechToText:
         sample_rate=16000,
         channels=1,
         chunk_size=4000,
-        max_record_seconds=3
+        max_record_seconds=5
     ):
         # Standard-Wake-Wortliste, falls None übergeben
         self.wake_words = [w.lower() for w in wake_words] if wake_words else ["roboter"]
@@ -56,6 +56,8 @@ class OfflineSpeechToText:
         silence_chunks = 0
         max_silence_chunks = int(self.sample_rate / self.chunk_size * 1.5)  # ~1.5s Stille
 
+        start_time = time.time()
+
         try:
             while True:
                 data = process.stdout.read(self.chunk_size)
@@ -82,8 +84,9 @@ class OfflineSpeechToText:
                                     collected_text = []
                                     if cleaned:
                                         collected_text.append(cleaned)
+                                    # Startzeit für Kommandoaufnahme setzen
+                                    start_time = time.time()
                                     break
-
                         else:
                             silence_chunks = 0
                 else:
@@ -92,9 +95,13 @@ class OfflineSpeechToText:
                         if silence_chunks > max_silence_chunks:
                             break
 
+                # Maximale Aufnahmezeit prüfen
+                if detected_wake_word and (time.time() - start_time) > self.max_record_seconds:
+                    print("⏱ Maximale Aufnahmezeit erreicht")
+                    break
+
         finally:
             process.terminate()
 
         command_text = " ".join(collected_text).strip() if detected_wake_word else None
         return detected_wake_word, command_text
-
