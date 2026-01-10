@@ -42,7 +42,7 @@ try:
 
         robot.eyes.stop_animation()
         # robot.eyes.set_color_hex("#0000FF")
-        # 
+        
         robot.play_random_file("/home/at/AT/audio/beep")
 
         robot.say(f"Du hast gesagt {command}")
