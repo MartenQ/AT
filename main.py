@@ -10,7 +10,7 @@ COMMAND_ACTIONS = {
     "left": lambda r: (r.left(), r.say("Ich fahre links")),
     "right": lambda r: (r.right(), r.say("Ich fahre rechts")),
     "stop": lambda r: (r.stop(), r.say("Ich stoppe")),
-    "motivation": lambda r: r.say("Los Alina, los los Alina"),
+    "motivation": lambda r: r.say("Los Marie, los los Marie, du schaffst das!"),
 
     # Neues: follow zwischen Objekt oder Person
     "follow_object": lambda r: r.follow_object_color(color="red"),  # Objekt (z.B. roter Ball)
