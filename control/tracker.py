@@ -72,10 +72,10 @@ class Tracker:
                     frame_center = frame.shape[1] // 2
 
                     # Bewegung steuern
-                    if cx < frame_center - 30:
-                        self.robot.left()
-                    elif cx > frame_center + 30:
+                    if cx < frame_center - 40:
                         self.robot.right()
+                    elif cx > frame_center + 40:
+                        self.robot.left()
                     else:
                         self.robot.fwd()
                 else:
