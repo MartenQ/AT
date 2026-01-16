@@ -33,10 +33,7 @@ try:
         robot.eyes.breathe()
         command = robot.listen_for_wake_word_and_command()
         
-        if not command:
-            # Kein Wake-Word erkannt → Idle-Check durchführen
-            robot.check_idle()
-            continue
+        
 
         # Wenn ein Command erkannt wurde, Animation stoppen
         robot.eyes.stop_animation()
@@ -63,6 +60,11 @@ try:
                     break
             if handled:
                 break
+
+        if not command:
+            # Kein Wake-Word erkannt → Idle-Check durchführen
+            robot.check_idle()
+            continue
 
         if not handled:
             robot.say("Das kenne ich nicht")
