@@ -29,22 +29,18 @@ robot.eyes.breathe()
 
 try:
     while True:
-        robot.check_idle()
-
-        # Augenanimation starten
-        
-
         # --- Wake-Word + Kommando ---
         robot.eyes.breathe()
         command = robot.listen_for_wake_word_and_command()
-        if not command:
-            continue  # kein Wake-Word erkannt
-
-        robot.eyes.stop_animation()
-        # robot.eyes.set_color_hex("#0000FF")
         
-        robot.play_random_file("/home/at/AT/audio/beep")
+        if not command:
+            # Kein Wake-Word erkannt → Idle-Check durchführen
+            robot.check_idle()
+            continue
 
+        # Wenn ein Command erkannt wurde, Animation stoppen
+        robot.eyes.stop_animation()
+        robot.play_random_file("/home/at/AT/audio/beep")
         robot.say(f"Du hast gesagt {command}")
 
         handled = False
@@ -70,8 +66,6 @@ try:
 
         if not handled:
             robot.say("Das kenne ich nicht")
-
-        #robot.eyes.set_color_hex("#00ffcc")
 
 
 except KeyboardInterrupt:
