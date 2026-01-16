@@ -51,8 +51,10 @@ class Tracker:
 
         ranges = self.COLOR_RANGES.get(self.color, self.COLOR_RANGES["red"])
 
+        start_time = time.time()  # Startzeit speichern
+
         try:
-            while self._tracking:
+            while self._tracking and (time.time() - start_time < 30):  # Schleife läuft max. 30 Sekunden
                 frame = picam2.capture_array()
                 hsv = cv2.cvtColor(frame, cv2.COLOR_RGB2HSV)
 
@@ -65,13 +67,11 @@ class Tracker:
                 # Konturen finden
                 contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
                 if contours:
-                    # größtes Objekt
                     c = max(contours, key=cv2.contourArea)
                     x, y, w, h = cv2.boundingRect(c)
                     cx = x + w // 2
                     frame_center = frame.shape[1] // 2
 
-                    # Bewegung steuern
                     if cx < frame_center - 40:
                         self.robot.right()
                     elif cx > frame_center + 40:
