@@ -3,8 +3,6 @@
 import os
 import json
 import subprocess
-import tempfile
-import wave
 import time
 
 os.environ["VOSK_LOG_LEVEL"] = "1"  # 0 = keine Logs, 1 = Fehler, 2 = Warnungen, 3 = Info

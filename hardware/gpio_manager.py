@@ -10,8 +10,12 @@ class GPIOManager:
     def setup_output(self, pin):
         GPIO.setup(pin, GPIO.OUT)
 
+    def write(self, pin, value):
+        GPIO.output(pin, GPIO.HIGH if value else GPIO.LOW)
+
     def pwm(self, pin, frequency):
         return GPIO.PWM(pin, frequency)
 
     def cleanup(self):
         GPIO.cleanup()
+

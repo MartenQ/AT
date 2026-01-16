@@ -35,12 +35,19 @@ class Robot:
             self.gpio.setup_output(pin)
 
         left_motor = Motor(
-            self.gpio.pwm(config.LEFT_MOTOR_FORWARD, config.PWM_FREQUENCY),
-            self.gpio.pwm(config.LEFT_MOTOR_BACKWARD, config.PWM_FREQUENCY)
+            self.gpio,
+            config.LEFT_MOTOR_FORWARD,
+            config.LEFT_MOTOR_BACKWARD,
+            config.LEFT_MOTOR_SPEED,
+            config.PWM_FREQUENCY
         )
+
         right_motor = Motor(
-            self.gpio.pwm(config.RIGHT_MOTOR_FORWARD, config.PWM_FREQUENCY),
-            self.gpio.pwm(config.RIGHT_MOTOR_BACKWARD, config.PWM_FREQUENCY)
+            self.gpio,
+            config.RIGHT_MOTOR_FORWARD,
+            config.RIGHT_MOTOR_BACKWARD,
+            config.RIGHT_MOTOR_SPEED,
+            config.PWM_FREQUENCY
         )
 
         self.movement = MovementController(left_motor, right_motor, config.DEFAULT_SPEED)
@@ -80,7 +87,7 @@ class Robot:
             print(f"⚠️ Keine Audiodateien im Ordner: {folder_path}")
             return
         file_to_play = random.choice(files)
-        print(f"▶️ Spiele Datei: {file_to_play}")
+        print(f"▶️ Spiele Datei: {file_to_play}-")
         self.tts.play(os.path.join(folder_path, file_to_play))
 
     # --- Sprachsteuerung ---
