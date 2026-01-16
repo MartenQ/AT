@@ -41,7 +41,7 @@ class OfflineSpeechToText:
 
         process = subprocess.Popen(
             [
-                "arecord",
+                "/usr/bin/arecord",
                 "-D", self.device,
                 "-f", "S16_LE",
                 "-r", str(self.sample_rate),
