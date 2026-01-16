@@ -51,37 +51,54 @@ class Tracker:
 
         ranges = self.COLOR_RANGES.get(self.color, self.COLOR_RANGES["red"])
 
-        start_time = time.time()  # Startzeit speichern
+        start_time = time.time()
 
-        try:
-            while self._tracking and (time.time() - start_time < 30):  # Schleife läuft max. 30 Sekunden
-                frame = picam2.capture_array()
-                hsv = cv2.cvtColor(frame, cv2.COLOR_RGB2HSV)
+    try:
+        while self._tracking and (time.time() - start_time < 30):
+            frame = picam2.capture_array()
+            hsv = cv2.cvtColor(frame, cv2.COLOR_RGB2HSV)
 
-                mask = np.zeros(hsv.shape[:2], dtype=np.uint8)
-                for lower, upper in ranges:
-                    lower_np = np.array(lower)
-                    upper_np = np.array(upper)
-                    mask += cv2.inRange(hsv, lower_np, upper_np)
+            # Maske erstellen
+            mask = np.zeros(hsv.shape[:2], dtype=np.uint8)
+            for lower, upper in ranges:
+                lower_np = np.array(lower)
+                upper_np = np.array(upper)
+                mask += cv2.inRange(hsv, lower_np, upper_np)
 
-                # Konturen finden
-                contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-                if contours:
-                    c = max(contours, key=cv2.contourArea)
-                    x, y, w, h = cv2.boundingRect(c)
-                    cx = x + w // 2
-                    frame_center = frame.shape[1] // 2
+            # Konturen finden
+            contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            if contours:
+                c = max(contours, key=cv2.contourArea)
+                x, y, w, h = cv2.boundingRect(c)
+                cx = x + w // 2
+                cy = y + h // 2
+                frame_center = frame.shape[1] // 2
 
-                    if cx < frame_center - 40:
-                        self.robot.right()
-                    elif cx > frame_center + 40:
-                        self.robot.left()
+                # Steuerung: Drehung proportional zur Abweichung
+                error_x = cx - frame_center
+                max_error = frame.shape[1] // 2
+                turn_speed = int((error_x / max_error) * 100)  # -100 bis +100
+
+                if abs(error_x) > 20:
+                    if turn_speed > 0:
+                        self.robot.left(turn_speed)   # links drehen proportional
                     else:
-                        self.robot.fwd()
+                        self.robot.right(-turn_speed) # rechts drehen proportional
                 else:
-                    self.robot.stop()
+                    self.robot.fwd(80)  # Vorwärts fahren, wenn zentriert
 
-                time.sleep(0.05)
-        finally:
-            picam2.stop()
-            self.robot.stop()
+            else:
+                self.robot.stop()
+
+            # Debug-Anzeige (optional)
+            cv2.circle(frame, (cx, cy), 5, (0, 255, 0), -1)
+            cv2.imshow("Frame", frame)
+            cv2.imshow("Mask", mask)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+            time.sleep(0.05)
+    finally:
+        picam2.stop()
+        self.robot.stop()
+        cv2.destroyAllWindows()
