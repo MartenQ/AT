@@ -17,7 +17,7 @@ class OfflineSpeechToText:
         sample_rate=16000,
         channels=1,
         chunk_size=4000,
-        max_record_seconds=15
+        max_record_seconds=5
     ):
         # Standard-Wake-Wortliste, falls None übergeben
         self.wake_words = [w.lower() for w in wake_words] if wake_words else ["roboter"]
@@ -41,7 +41,7 @@ class OfflineSpeechToText:
 
         process = subprocess.Popen(
             [
-                "/usr/bin/arecord",
+                "arecord",
                 "-D", self.device,
                 "-f", "S16_LE",
                 "-r", str(self.sample_rate),
